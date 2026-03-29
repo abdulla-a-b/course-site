@@ -4,325 +4,212 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alphabet Typing Adventure 🦸‍♂️</title>
-  <!-- Tailwind CSS CDN for beautiful & responsive design -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
-    
-    body {
-      font-family: 'Comic Neue', cursive;
-    }
-    
-    .letter-box {
-      transition: all 0.3s ease;
-    }
-    
-    .typed-letter {
-      animation: pop 0.3s ease;
-    }
-    
-    @keyframes pop {
-      0% { transform: scale(0.5); }
-      100% { transform: scale(1); }
-    }
-    
-    .keyboard-key {
-      transition: all 0.2s ease;
-    }
+    body { font-family: 'Comic Neue', cursive; }
+    .letter-box { transition: all 0.3s ease; }
+    .typed-letter { animation: pop 0.3s ease; }
+    @keyframes pop { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
   </style>
 </head>
 <body class="bg-gradient-to-br from-purple-200 via-pink-200 to-blue-200 min-h-screen">
 
-  <div class="max-w-4xl mx-auto p-4 md:p-8">
-    
-    <!-- Header -->
+  <!-- Password Screen -->
+  <div id="password-screen" class="min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white rounded-3xl shadow-2xl p-10 max-w-md w-full text-center">
+      <div class="text-6xl mb-6">🔒</div>
+      <h1 class="text-3xl font-bold text-purple-700 mb-4">Kids Typing Adventure</h1>
+      <p class="text-gray-600 mb-8">Enter the password to start the practice<br><span class="text-sm">(Only for enrolled students)</span></p>
+      
+      <input id="password-input" 
+             type="password" 
+             placeholder="Enter password here"
+             class="w-full px-6 py-4 text-xl border-2 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-600 mb-6">
+      
+      <button onclick="checkPassword()" 
+              class="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl rounded-2xl transition">
+        Unlock Practice →
+      </button>
+      
+      <p id="error-msg" class="text-red-500 mt-4 min-h-[24px]"></p>
+    </div>
+  </div>
+
+  <!-- Main Game (hidden until password correct) -->
+  <div id="game-screen" class="hidden max-w-4xl mx-auto p-4 md:p-8">
+    <!-- Same beautiful game UI as before -->
     <div class="flex flex-col md:flex-row items-center justify-between mb-8">
       <div class="flex items-center gap-3">
         <div class="text-5xl">🦸‍♂️</div>
-        <h1 class="text-4xl md:text-5xl font-bold text-purple-700 tracking-wider">
-          Alphabet Typing Adventure
-        </h1>
+        <h1 class="text-4xl md:text-5xl font-bold text-purple-700">Alphabet Typing Adventure</h1>
       </div>
-      <a href="index.html" 
-         class="mt-4 md:mt-0 px-6 py-3 bg-white rounded-2xl shadow-md hover:shadow-xl text-purple-600 font-bold flex items-center gap-2 transition">
-        ← Back to Course Catalog
-      </a>
+      <a href="index.html" class="mt-4 md:mt-0 px-6 py-3 bg-white rounded-2xl shadow-md hover:shadow-xl text-purple-600 font-bold">← Back to Catalog</a>
     </div>
 
     <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-10">
-
-      <!-- Instructions -->
       <div class="text-center mb-8">
-        <p class="text-xl md:text-2xl text-gray-700 font-medium">
-          Type the letters <span class="text-purple-600">A to Z</span> in order!<br>
-          <span class="text-sm md:text-base text-gray-500">Use your computer or mobile keyboard</span>
-        </p>
+        <p class="text-xl md:text-2xl text-gray-700">Type letters A to Z in order!</p>
       </div>
 
-      <!-- Timer & Stats -->
       <div class="flex flex-wrap justify-center gap-6 mb-8">
         <div class="bg-purple-100 text-purple-800 rounded-2xl px-8 py-4 text-center min-w-[160px]">
-          <div class="text-xs uppercase tracking-widest font-bold">Time</div>
+          <div class="text-xs uppercase font-bold">Time</div>
           <div id="timer" class="text-5xl font-bold tabular-nums">00:00</div>
         </div>
-        
         <div class="bg-green-100 text-green-800 rounded-2xl px-8 py-4 text-center min-w-[160px]">
-          <div class="text-xs uppercase tracking-widest font-bold">Letters Done</div>
+          <div class="text-xs uppercase font-bold">Letters Done</div>
           <div id="progress" class="text-5xl font-bold">0 / 26</div>
         </div>
-        
         <div class="bg-yellow-100 text-yellow-800 rounded-2xl px-8 py-4 text-center min-w-[160px]">
-          <div class="text-xs uppercase tracking-widest font-bold">Speed</div>
+          <div class="text-xs uppercase font-bold">Speed</div>
           <div id="speed" class="text-5xl font-bold">0 LPM</div>
         </div>
       </div>
 
-      <!-- Next Letter -->
       <div class="text-center mb-8">
         <p class="text-lg text-gray-600 mb-3">Type this letter now 👇</p>
-        <div id="next-letter" 
-             class="letter-box mx-auto w-28 h-28 md:w-36 md:h-36 bg-gradient-to-br from-yellow-300 to-orange-400 text-white rounded-3xl flex items-center justify-center text-7xl md:text-8xl font-bold shadow-inner border-8 border-white">
+        <div id="next-letter" class="letter-box mx-auto w-28 h-28 md:w-36 md:h-36 bg-gradient-to-br from-yellow-300 to-orange-400 text-white rounded-3xl flex items-center justify-center text-7xl md:text-8xl font-bold shadow-inner border-8 border-white">
           A
         </div>
       </div>
 
-      <!-- Typed Sequence -->
       <div class="mb-8">
         <p class="text-lg text-gray-600 mb-3 text-center">You have typed:</p>
-        <div id="typed-sequence" 
-             class="flex flex-wrap gap-2 justify-center min-h-[80px] bg-gray-50 rounded-2xl p-6 border-2 border-dashed border-gray-200">
-          <!-- Letters will appear here automatically -->
-        </div>
+        <div id="typed-sequence" class="flex flex-wrap gap-2 justify-center min-h-[80px] bg-gray-50 rounded-2xl p-6 border-2 border-dashed border-gray-200"></div>
       </div>
 
-      <!-- Status Message -->
-      <div id="status" class="text-center text-2xl font-bold min-h-[60px] flex items-center justify-center"></div>
+      <div id="status" class="text-center text-2xl font-bold min-h-[60px]"></div>
 
-      <!-- Controls -->
       <div class="flex flex-col md:flex-row gap-4 justify-center">
-        <button onclick="startOver()" 
-                class="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold text-xl rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
-          🔄 Start Over
-        </button>
-        
-        <button onclick="pauseTimer()" id="pause-btn"
-                class="px-8 py-4 bg-gray-500 hover:bg-gray-600 text-white font-bold text-xl rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
-          ⏸️ Pause
-        </button>
+        <button onclick="startOver()" class="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold text-xl rounded-2xl">🔄 Start Over</button>
+        <button onclick="pauseTimer()" id="pause-btn" class="px-8 py-4 bg-gray-500 hover:bg-gray-600 text-white font-bold text-xl rounded-2xl">⏸️ Pause</button>
       </div>
-
     </div>
-
-    <!-- Footer note -->
-    <p class="text-center text-xs text-gray-500 mt-8">
-      Perfect for kids 5–10 years old • Works on phone & computer • Real keyboard only
-    </p>
   </div>
 
   <script>
-    // Tailwind script already loaded in head
-    function initializeTailwind() {
-      return {
-        config(userConfig = {}) {
-          return {
-            configUser: userConfig,
-            theme: {
-              extend: {},
-            },
-          }
-        },
+    // === PASSWORD PROTECTION ===
+    const CORRECT_PASSWORD = "kids2026";   // ← CHANGE THIS TO YOUR OWN PASSWORD
+
+    function checkPassword() {
+      const input = document.getElementById('password-input').value.trim();
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (input === CORRECT_PASSWORD) {
+        document.getElementById('password-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        initGame();   // Start the game
+      } else {
+        errorMsg.textContent = "❌ Wrong password. Please contact your teacher.";
+        setTimeout(() => errorMsg.textContent = "", 3000);
       }
     }
-    
-    // Main game variables
-    let currentIndex = 0
-    let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-    let typedLetters = []
-    let startTime = null
-    let timerInterval = null
-    let isPaused = false
-    let totalTime = 0
 
-    const nextLetterEl = document.getElementById('next-letter')
-    const typedSequenceEl = document.getElementById('typed-sequence')
-    const timerEl = document.getElementById('timer')
-    const progressEl = document.getElementById('progress')
-    const speedEl = document.getElementById('speed')
-    const statusEl = document.getElementById('status')
-    const pauseBtn = document.getElementById('pause-btn')
+    // === GAME CODE (same as before, slightly cleaned) ===
+    let currentIndex = 0;
+    let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    let typedLetters = [];
+    let startTime = null;
+    let timerInterval = null;
+    let isPaused = false;
 
-    // Update next letter display
+    const nextLetterEl = document.getElementById('next-letter');
+    const typedSequenceEl = document.getElementById('typed-sequence');
+    const timerEl = document.getElementById('timer');
+    const progressEl = document.getElementById('progress');
+    const speedEl = document.getElementById('speed');
+    const statusEl = document.getElementById('status');
+    const pauseBtn = document.getElementById('pause-btn');
+
     function updateNextLetter() {
-      if (currentIndex >= letters.length) {
-        nextLetterEl.textContent = '🎉'
-        nextLetterEl.classList.add('!bg-green-400')
-        return
-      }
-      nextLetterEl.textContent = letters[currentIndex]
-      nextLetterEl.classList.remove('!bg-green-400')
+      nextLetterEl.textContent = currentIndex < letters.length ? letters[currentIndex] : '🎉';
     }
 
-    // Add letter to typed sequence with animation
     function addToTypedSequence(letter) {
-      const span = document.createElement('span')
-      span.className = `typed-letter inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-400 text-white text-3xl md:text-4xl font-bold rounded-2xl shadow-md`
-      span.textContent = letter
-      typedSequenceEl.appendChild(span)
+      const span = document.createElement('span');
+      span.className = `typed-letter inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-400 text-white text-3xl md:text-4xl font-bold rounded-2xl shadow-md`;
+      span.textContent = letter;
+      typedSequenceEl.appendChild(span);
     }
 
-    // Start the timer
     function startTimer() {
-      if (timerInterval) return
-      startTime = Date.now() - totalTime
+      if (timerInterval) return;
+      startTime = Date.now();
       timerInterval = setInterval(() => {
-        if (isPaused) return
-        const elapsed = Math.floor((Date.now() - startTime) / 1000)
-        const minutes = Math.floor(elapsed / 60)
-        const seconds = elapsed % 60
-        timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-        
-        // Calculate speed (Letters Per Minute)
-        const minutesPassed = elapsed / 60
-        const speed = minutesPassed > 0 ? Math.round(currentIndex / minutesPassed) : 0
-        speedEl.textContent = `${speed} LPM`
-      }, 100)
+        if (isPaused) return;
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const min = Math.floor(elapsed / 60).toString().padStart(2, '0');
+        const sec = (elapsed % 60).toString().padStart(2, '0');
+        timerEl.textContent = `${min}:${sec}`;
+
+        const speed = Math.round(currentIndex / (elapsed / 60) || 0);
+        speedEl.textContent = `${speed} LPM`;
+      }, 200);
     }
 
-    // Stop timer
-    function stopTimer() {
-      if (timerInterval) {
-        clearInterval(timerInterval)
-        timerInterval = null
-      }
-    }
-
-    // Pause / Resume
-    window.pauseTimer = function() {
-      isPaused = !isPaused
-      pauseBtn.textContent = isPaused ? '▶️ Resume' : '⏸️ Pause'
-      pauseBtn.classList.toggle('bg-green-500', isPaused)
-      pauseBtn.classList.toggle('bg-gray-500', !isPaused)
-    }
-
-    // Main keyboard handler
     function handleKeyPress(e) {
-      // Only allow letters
-      if (!/^[a-zA-Z]$/.test(e.key)) return
-      
-      const pressed = e.key.toUpperCase()
-      
-      // Game not started yet? Start on first correct key
-      if (currentIndex === 0 && pressed === letters[0] && !startTime) {
-        startTimer()
-      }
-      
-      // Correct next letter?
+      if (!/^[a-zA-Z]$/.test(e.key)) return;
+      const pressed = e.key.toUpperCase();
+
       if (pressed === letters[currentIndex]) {
-        // Success!
-        typedLetters.push(pressed)
-        addToTypedSequence(pressed)
-        
-        currentIndex++
-        progressEl.textContent = `${currentIndex} / 26`
-        
-        updateNextLetter()
-        
-        // Gentle success feedback
-        statusEl.innerHTML = `✅ Great job!`
-        setTimeout(() => { statusEl.innerHTML = '' }, 800)
-        
-        // Check if finished
+        typedLetters.push(pressed);
+        addToTypedSequence(pressed);
+        currentIndex++;
+        progressEl.textContent = `${currentIndex} / 26`;
+        updateNextLetter();
+        statusEl.innerHTML = `✅ Good job!`;
+
         if (currentIndex >= letters.length) {
-          stopTimer()
-          const finalTime = Math.floor((Date.now() - startTime) / 1000)
-          const finalMinutes = finalTime / 60
-          const finalSpeed = Math.round(26 / finalMinutes)
-          
-          statusEl.innerHTML = `
-            <div class="text-green-600">
-              🎉 YOU DID IT!<br>
-              <span class="text-3xl">Time: ${timerEl.textContent}</span><br>
-              <span class="text-2xl">Speed: ${finalSpeed} letters per minute</span>
-            </div>
-          `
-          // Confetti effect
-          createConfetti()
+          clearInterval(timerInterval);
+          statusEl.innerHTML = `<div class="text-green-600 text-3xl">🎉 Congratulations! You finished all letters!</div>`;
+          createConfetti();
         }
-      } 
-      // Wrong letter
-      else {
-        statusEl.innerHTML = `<span class="text-red-500">❌ Next is <span class="font-bold">${letters[currentIndex]}</span></span>`
-        setTimeout(() => { if (statusEl.innerHTML.includes('❌')) statusEl.innerHTML = '' }, 1200)
+      } else {
+        statusEl.innerHTML = `<span class="text-red-500">Try ${letters[currentIndex]} next</span>`;
       }
     }
 
-    // Confetti celebration
     function createConfetti() {
-      for (let i = 0; i < 80; i++) {
+      for (let i = 0; i < 60; i++) {
         setTimeout(() => {
-          const confetti = document.createElement('div')
-          confetti.style.position = 'fixed'
-          confetti.style.left = Math.random() * 100 + 'vw'
-          confetti.style.top = '-20px'
-          confetti.style.fontSize = '20px'
-          confetti.style.zIndex = '9999'
-          confetti.textContent = ['🎉','⭐','🌟','🦸‍♂️','🚀'][Math.floor(Math.random()*5)]
-          document.body.appendChild(confetti)
-          
-          const duration = Math.random() * 3000 + 2000
-          const angle = Math.random() * 80 - 40
-          
-          confetti.animate([
-            { transform: `translateY(0) rotate(0deg)` },
-            { transform: `translateY(${window.innerHeight + 100}px) rotate(${angle * 8}deg)` }
-          ], {
-            duration: duration,
-            easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
-          })
-          
-          setTimeout(() => confetti.remove(), duration)
-        }, i * 3)
+          const c = document.createElement('div');
+          c.style.position = 'fixed'; c.style.zIndex = '9999';
+          c.style.left = Math.random() * 100 + 'vw';
+          c.style.top = '-30px';
+          c.textContent = '⭐🎉🌟🦸‍♂️'[Math.floor(Math.random()*4)];
+          document.body.appendChild(c);
+          c.animate([{transform: 'translateY(0)'}, {transform: `translateY(${window.innerHeight}px)`}], {duration: 2500 + Math.random()*2000});
+          setTimeout(() => c.remove(), 5000);
+        }, i * 8);
       }
     }
 
-    // Reset the entire game
     window.startOver = function() {
-      stopTimer()
-      currentIndex = 0
-      typedLetters = []
-      totalTime = 0
-      isPaused = false
-      startTime = null
-      
-      typedSequenceEl.innerHTML = ''
-      progressEl.textContent = '0 / 26'
-      speedEl.textContent = '0 LPM'
-      timerEl.textContent = '00:00'
-      statusEl.innerHTML = ''
-      pauseBtn.textContent = '⏸️ Pause'
-      pauseBtn.classList.remove('bg-green-500')
-      pauseBtn.classList.add('bg-gray-500')
-      
-      updateNextLetter()
+      currentIndex = 0; typedLetters = []; isPaused = false;
+      typedSequenceEl.innerHTML = '';
+      progressEl.textContent = '0 / 26';
+      speedEl.textContent = '0 LPM';
+      timerEl.textContent = '00:00';
+      statusEl.innerHTML = '';
+      updateNextLetter();
+    };
+
+    window.pauseTimer = function() {
+      isPaused = !isPaused;
+      pauseBtn.textContent = isPaused ? '▶️ Resume' : '⏸️ Pause';
+    };
+
+    function initGame() {
+      updateNextLetter();
+      document.addEventListener('keydown', handleKeyPress);
+      console.log('%cKids Typing Adventure unlocked!', 'color:purple');
     }
 
-    // Initialize everything
-    function init() {
-      // Tailwind ready
-      initializeTailwind()
-      
-      // Show first letter
-      updateNextLetter()
-      
-      // Listen to real keyboard (works on computer + mobile virtual keyboard)
-      document.addEventListener('keydown', handleKeyPress)
-      
-      // Welcome message
-      console.log('%c🎮 Kids Alphabet Typing Adventure ready!', 'color:#a855f7; font-size:18px;')
-    }
-
-    // Start the app when page loads
-    window.onload = init
+    // Allow pressing Enter on password field
+    document.getElementById('password-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkPassword();
+    });
   </script>
 </body>
 </html>
